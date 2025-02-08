@@ -1,0 +1,127 @@
+let cloneCounter = 1;
+const cloneList = document.getElementById("cloneList");
+const addCloneButton = document.getElementById("addClone");
+const menuButton = document.getElementById("menuButton");
+const menu = document.getElementById("menu");
+const hiddenAppsButton = document.getElementById("hiddenAppsButton");
+const recycleBinButton = document.getElementById("recycleBinButton");
+
+let hiddenApps = [];
+let recycleBin = [];
+
+menuButton.addEventListener("click", () => {
+  menu.classList.toggle("hidden");
+});
+
+addCloneButton.addEventListener("click", () => {
+  addClone(cloneCounter);
+  cloneCounter++;
+  updateCloneSequence();
+});
+
+function addClone(id) {
+  const clone = document.createElement("div");
+  clone.classList.add("clone-item");
+  clone.dataset.id = id;
+  clone.innerHTML = `
+    <p>Clone ${id}</p>
+    <div class="clone-actions">
+      <button class="hide-btn">Hide</button>
+      <button class="delete-btn">Delete</button>
+    </div>
+  `;
+
+  cloneList.appendChild(clone);
+
+  let isActionsVisible = false;
+
+  clone.addEventListener("mousedown", (event) => {
+    event.preventDefault();
+    let pressTimer = setTimeout(() => {
+      toggleCloneActions(clone);
+      isActionsVisible = !isActionsVisible;
+    }, 500);
+
+    clone.addEventListener("mouseup", () => clearTimeout(pressTimer));
+    clone.addEventListener("mouseleave", () => clearTimeout(pressTimer));
+  });
+
+  clone.querySelector(".hide-btn").addEventListener("click", () => hideClone(clone));
+  clone.querySelector(".delete-btn").addEventListener("click", () => deleteClone(clone));
+}
+
+function toggleCloneActions(clone) {
+  const actions = clone.querySelector(".clone-actions");
+  actions.style.display = actions.style.display === "block" ? "none" : "block";
+}
+
+function hideClone(clone) {
+  hiddenApps.push(clone);
+  clone.remove();
+  alert(`Clone ${clone.dataset.id} hidden!`);
+}
+
+function deleteClone(clone) {
+  recycleBin.push(clone);
+  clone.remove();
+  alert(`Clone ${clone.dataset.id} deleted!`);
+}
+
+hiddenAppsButton.addEventListener("click", () => {
+  displayApps(hiddenApps, "Hidden Apps", restoreHiddenApp);
+});
+
+recycleBinButton.addEventListener("click", () => {
+  displayApps(recycleBin, "Recycle Bin", restoreDeletedApp);
+});
+
+function displayApps(appList, title, restoreFunction) {
+  const modal = document.getElementById("modal");
+  modal.innerHTML = `<h2>${title}</h2>`;
+  appList.forEach(app => {
+    const appItem = document.createElement("div");
+    appItem.textContent = app.querySelector("p").textContent;
+
+    const restoreButton = document.createElement("button");
+    restoreButton.textContent = "Restore";
+    restoreButton.addEventListener("click", () => {
+      restoreFunction(app);
+      modal.classList.add("hidden");
+    });
+
+    appItem.appendChild(restoreButton);
+    modal.appendChild(appItem);
+  });
+
+  const closeButton = document.createElement("button");
+  closeButton.textContent = "Close";
+  closeButton.addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
+
+  modal.appendChild(closeButton);
+  modal.classList.remove("hidden");
+}
+
+function restoreHiddenApp(clone) {
+  hiddenApps = hiddenApps.filter(app => app !== clone);
+  cloneList.appendChild(clone);
+  updateCloneSequence();
+  alert(`Clone ${clone.dataset.id} restored from Hidden Apps!`);
+}
+
+function restoreDeletedApp(clone) {
+  recycleBin = recycleBin.filter(app => app !== clone);
+  cloneList.appendChild(clone);
+  updateCloneSequence();
+  alert(`Clone ${clone.dataset.id} restored from Recycle Bin!`);
+}
+
+function updateCloneSequence() {
+  const allClones = Array.from(cloneList.children);
+  allClones.forEach((clone, index) => {
+    clone.dataset.id = index + 1;
+    clone.querySelector("p").textContent = `Clone ${index + 1}`;
+  });
+  cloneCounter = allClones.length + 1;
+}

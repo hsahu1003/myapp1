@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clone App Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <h1>Clone App Manager</h1>
+      <button id="menuButton">☰ Menu</button>
+    </header>
+
+    <div id="menu" class="menu hidden">
+      <ul>
+        <li><button id="hiddenAppsButton">Hidden Apps</button></li>
+        <li><button id="recycleBinButton">Recycle Bin</button></li>
+        <li><button id="privacyPolicyButton">Privacy Policy</button></li>
+      </ul>
+    </div>
+
+    <div id="cloneList" class="clone-list"></div>
+
+    <div class="actions">
+      <button id="addClone">Add Clone</button>
+    </div>
+
+    <div id="modal" class="modal hidden"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
